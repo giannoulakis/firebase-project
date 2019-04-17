@@ -1,4 +1,4 @@
-# hello-world-2
+# Firebase project
 
 ## Project setup
 ```
