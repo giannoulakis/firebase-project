@@ -2,7 +2,8 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <router-link to="/about">About</router-link> |  
+      <a href="#" v-if="isAuthenticated" @click.prevent="logout">Logout</a>
     </div>
     <router-view/>
   </div>
@@ -27,3 +28,22 @@
   }
 }
 </style>
+<script>
+export default {
+  data() {
+    return {}
+
+
+  },
+  computed:{
+    isAuthenticated(){
+      return this.$store.state.isAuthenticated  
+    }
+  },
+  methods: {
+    logout() {
+        this.$store.dispatch('userSignOut');
+    }
+  }
+}
+</script>
