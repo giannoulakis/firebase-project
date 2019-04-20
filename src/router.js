@@ -4,6 +4,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Login from './views/Login.vue'
+import SignUp from './views/SignUp.vue'
 import store from './store'
 
 Vue.use(Router)
@@ -22,6 +23,11 @@ const router = new Router({
       component: Login
     },
     {
+      path: '/signup',
+      name: 'signup',
+      component: SignUp
+    },
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting
@@ -34,7 +40,7 @@ const router = new Router({
 
 
 router.beforeEach((to, from, next) => {
-  if(!store.state.isAuthenticated && to.name != 'login'){
+  if(!store.state.isAuthenticated && to.name != 'login' && to.name != 'signup'){
     store.dispatch('setIntendedUrl',{url:to.path});
     next({ name: 'login' })
   } else {
