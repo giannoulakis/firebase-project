@@ -1,11 +1,16 @@
 <template>
   <div id="app">
+    <div v-if="!isLoading">
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> |  
       <a href="#" v-if="isAuthenticated" @click.prevent="logout">Logout</a>
     </div>
     <router-view/>
+    </div>
+    <div v-else>
+      Carregando...
+    </div>
   </div>
 </template>
 
@@ -29,21 +34,24 @@
 }
 </style>
 <script>
+/* eslint-disable no-console */
 export default {
   data() {
     return {}
-
-
   },
   computed:{
     isAuthenticated(){
       return this.$store.state.isAuthenticated  
+    },
+    isLoading(){
+      return this.$store.state.isLoading
     }
   },
   methods: {
     logout() {
-        this.$store.dispatch('userSignOut');
+      this.$store.dispatch('userSignOut');        
     }
-  }
+  },
+
 }
 </script>

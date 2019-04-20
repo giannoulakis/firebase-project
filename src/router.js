@@ -35,6 +35,7 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   if(!store.state.isAuthenticated && to.name != 'login'){
+    store.dispatch('setIntendedUrl',{url:to.path});
     next({ name: 'login' })
   } else {
     next();

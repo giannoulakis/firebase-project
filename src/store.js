@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+/* eslint-disable no-unused-vars */
 import Vue from 'vue'
 import Vuex from 'vuex'
 import firebase from '@/firebase'
@@ -11,6 +12,8 @@ export default new Vuex.Store({
   state: {
     user: null,
     isAuthenticated: false,
+    intendedUrl:'/',
+    isLoading: true,
   },
   mutations: {
     setUser(state, payload) {
@@ -18,37 +21,35 @@ export default new Vuex.Store({
     },
     setIsAuthenticated(state, payload) {
       state.isAuthenticated = payload;
+    },
+    setIntendedUrl(state, payload) {
+      state.intendedUrl = payload;
+    },
+    setIsLoading(state, payload) {
+      state.isLoading = payload;
     }
   },
   actions: {
-    userLogin({ commit }, { email, password }) {
-      firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(user => {
+    userLogin({commit},{ email, password }) {
+      firebase.auth().signInWithEmailAndPassword(email, password);
+    },
+    userSignOut({commit}) {
+      firebase.auth().signOut();
+    },
+    setIntendedUrl({commit},{url}){
+      commit('setIntendedUrl',url)
+    },
+    setLogin({ commit }, {user}) {
+      commit('setIsLoading',false)
+      if(user){
         commit('setUser', user);
         commit('setIsAuthenticated', true);
-        router.push({name:'home'});
-      })
-      .catch(() => {
+        router.push({path:this.state.intendedUrl});
+      } else {
         commit('setUser', null);
         commit('setIsAuthenticated', false);
-      });
-    },
-    userSignOut({ commit }) {
-      firebase
-          .auth()
-          .signOut()
-          .then(() => {
-              commit('setUser', null);
-              commit('setIsAuthenticated', false);
-              router.push({name:'login'});
-          })
-          .catch(() => {
-              commit('setUser', null);
-              commit('setIsAuthenticated', false);
-              router.push({name:'login'});
-          });
+        router.push({name:'login'});
+      }
     }
   }
 })
