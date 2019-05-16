@@ -3,8 +3,8 @@
     <div v-if="!isLoading">
     <div id="nav">
       <router-link :to="{name: 'home'}">Home</router-link> |
-      <router-link :to="{name: 'about'}">About</router-link> |  
-      <router-link :to="{name: 'signup'}">Sign Up</router-link> |  
+      <router-link :to="{name: 'about'}">About</router-link> |
+      <router-link :to="{name: 'signup'}">Sign Up</router-link> |
       <a href="#" v-if="isAuthenticated" @click.prevent="logout">Logout</a>
     </div>
     <router-view/>
@@ -42,7 +42,7 @@ export default {
   },
   computed:{
     isAuthenticated(){
-      return this.$store.state.isAuthenticated  
+      return this.$store.state.isAuthenticated
     },
     isLoading(){
       return this.$store.state.isLoading
@@ -50,7 +50,7 @@ export default {
   },
   methods: {
     logout() {
-      this.$store.dispatch('userSignOut');        
+      this.$store.dispatch('userSignOut');
     }
   },
 

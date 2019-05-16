@@ -51,5 +51,13 @@ export default new Vuex.Store({
         router.push({name:'login'});
       }
     }
+  },
+  getters:{
+    userId: state => {
+      if(!state.isAuthenticated){
+        return null;
+      }
+      return state.user.uid
+    }
   }
 })

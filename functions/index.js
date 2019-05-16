@@ -15,15 +15,16 @@ admin.initializeApp();
 //         country: "Tailandia",
 //         status: "Comido"
 //     };
-    
-    
+
+
 //     // response.send("saved!");
 // });
 
 exports.saveNewUser = functions.auth.user().onCreate((user) => {
-      var userObject = {
-        name : user.displayName,
-        email : user.email,
-     };
-    return admin.firestore().collection('users').add(userObject);
+  var userObject = {
+    name : user.displayName,
+    email : user.email,
+    uid : user.uid,
+  };
+  return admin.firestore().collection('users').doc(user.uid).set(userObject);
 });
