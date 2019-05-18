@@ -5,6 +5,10 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Login from './views/Login.vue'
 import SignUp from './views/SignUp.vue'
+import About from './views/About.vue'
+import ProjectList from './views/ProjectList.vue'
+import ProjectForm from './views/ProjectForm.vue'
+
 import store from './store'
 
 Vue.use(Router)
@@ -30,10 +34,18 @@ const router = new Router({
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+      component: About
+    },
+    {
+      path: '/projects',
+      name: 'projects',
+      component: ProjectList,
+    },
+    {
+      path: '/projects/form/:id?',
+      name: 'projectForm',
+      component: ProjectForm,
+      props:true,
     }
   ]
 })
@@ -45,7 +57,7 @@ router.beforeEach((to, from, next) => {
     next({ name: 'login' })
   } else {
     next();
-  }  
+  }
 });
 
  export default router

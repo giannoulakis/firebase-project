@@ -14,6 +14,7 @@ export default new Vuex.Store({
     isAuthenticated: false,
     intendedUrl:'/',
     isLoading: true,
+    users: [],
   },
   mutations: {
     setUser(state, payload) {
@@ -24,6 +25,9 @@ export default new Vuex.Store({
     },
     setIntendedUrl(state, payload) {
       state.intendedUrl = payload;
+    },
+    setUsersCache(state, users) {
+      state.users = users
     },
     setIsLoading(state, payload) {
       state.isLoading = payload;
@@ -50,6 +54,9 @@ export default new Vuex.Store({
         commit('setIsAuthenticated', false);
         router.push({name:'login'});
       }
+    },
+    setUsersCache({commit}, {users}) {
+      commit('setUsersCache', users);
     }
   },
   getters:{
