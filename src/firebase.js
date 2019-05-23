@@ -27,4 +27,5 @@ firebase.auth().onAuthStateChanged((user) => {
 });
 
 
+// export { appFirebase as default, firebase };
 export default appFirebase;

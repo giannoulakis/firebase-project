@@ -20,7 +20,8 @@
       <td>{{ project.dateEnd }}</td>
       <td><span v-for="(member, indexMember) in project.members" :key="indexMember">{{ member.name }}, </span></td>
       <td>{{ project.tasks }}</td>
-      <td><router-link :to="{name:'projectForm', params: {id: project.id}}">Editar</router-link></td>
+      <td><router-link :to="{name:'projectView', params: {id: project.id}}">Visualizar</router-link></td>
+    	<td><router-link :to="{name:'projectForm', params: {id: project.id}}">Editar</router-link></td>
     	<td><a href="#" @click.prevent="onDelete(project.id)">Deletar</a></td>
     </tr>
   </tbody>

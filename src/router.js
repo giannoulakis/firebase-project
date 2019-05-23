@@ -8,6 +8,8 @@ import SignUp from './views/SignUp.vue'
 import About from './views/About.vue'
 import ProjectList from './views/ProjectList.vue'
 import ProjectForm from './views/ProjectForm.vue'
+import ProjectView from './views/ProjectView.vue'
+import TaskForm from './views/TaskForm.vue'
 
 import store from './store'
 
@@ -46,7 +48,32 @@ const router = new Router({
       name: 'projectForm',
       component: ProjectForm,
       props:true,
-    }
+    },
+    {
+      path: '/projects/view/:id',
+      name: 'projectView',
+      component: ProjectView,
+      props:true,
+    },
+    {
+      path: '/projects/view/:id/new-task',
+      name: 'taskNew',
+      props: {default:true, popup: true},
+      components: {
+        default: ProjectView,
+        popup: TaskForm,
+      },
+    },,
+    {
+      path: '/projects/view/:id/update-task/:taskId',
+      name: 'taskUpdate',
+      props: {default:true, popup: true},
+      components: {
+        default: ProjectView,
+        popup: TaskForm,
+      },
+    },
+
   ]
 })
 

@@ -13,6 +13,7 @@
     <div v-else>
       Carregando...
     </div>
+    <router-view name="popup" :key="$route.fullPath"/>
   </div>
 </template>
 
