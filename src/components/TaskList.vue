@@ -1,29 +1,41 @@
 <template>
-	<div class="list-cards has-tasks">
-	<div v-for="(task, index) in list" :key="index" class="card is-task">
-		<div class="task-id">
-			<strong>id</strong>
-			{{task.id}}
+	<div class="columns">
+		<div class="column is-3" v-for="(task, index) in list" :key="index">
+			<div class="card is-task">
+				<div class="card-header">
+					<div class="card-header-title">
+						{{task.id}} - {{task.name}}
+					</div>
+				</div>
+				<div class="card-content">
+					<div class="task-dateDue">
+						<strong>Data de vencimento</strong>
+						{{task.dateDue}}
+					</div>
+					<div class="task-finished">
+						<strong>Membros</strong>
+						<ul>
+							<li v-for="(member, indexMember) in task.members" :key="indexMember">
+								{{member.name}}
+							</li>
+						</ul>
+					</div>
+					<div class="task-finished">
+						<strong>finished</strong>
+						{{task.finished || false}}
+					</div>
+				</div>
+				<!-- <div class="task-description">
+					<strong>description</strong>
+					{{task.description}}
+				</div> -->
+				<!-- members: [<users>], -->
+				<div class="card-footer">
+					<router-link class="button is-info" :to="{name:'taskUpdate', params:{id: task.projectId, taskId:task.id}}">Editar</router-link>
+					<router-link class="button is-info" :to="{name:'taskView', params:{id: task.projectId, taskId:task.id}}">Visualizar</router-link>
+				</div>
+			</div>
 		</div>
-		<div class="task-name">
-			<strong>name</strong>
-			{{task.name}}
-		</div>
-        <!-- <div class="task-description">
-			<strong>description</strong>
-			{{task.description}}
-		</div> -->
-        <div class="task-dateDue">
-			<strong>dateDue</strong>
-			{{task.dateDue}}
-		</div>
-        <!-- members: [<users>], -->
-        <div class="task-finished">
-			<strong>finished</strong>
-			{{task.finished}}
-		</div>
-		<router-link :to="{name:'taskUpdate', params:{id: task.projectId, taskId:task.id}}">Editar</router-link>
-	</div>
 	</div>
 </template>
 <script>

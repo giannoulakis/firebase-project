@@ -10,6 +10,7 @@ import ProjectList from './views/ProjectList.vue'
 import ProjectForm from './views/ProjectForm.vue'
 import ProjectView from './views/ProjectView.vue'
 import TaskForm from './views/TaskForm.vue'
+import TaskView from './views/TaskView.vue'
 
 import store from './store'
 
@@ -63,7 +64,7 @@ const router = new Router({
         default: ProjectView,
         popup: TaskForm,
       },
-    },,
+    },
     {
       path: '/projects/view/:id/update-task/:taskId',
       name: 'taskUpdate',
@@ -71,6 +72,15 @@ const router = new Router({
       components: {
         default: ProjectView,
         popup: TaskForm,
+      },
+    },
+    {
+      path: '/projects/view/:id/view-task/:taskId',
+      name: 'taskView',
+      props: {default:true, popup: true},
+      components: {
+        default: ProjectView,
+        popup: TaskView,
       },
     },
 

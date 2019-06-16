@@ -32,11 +32,12 @@ export default {
 		id: {
 			type: String,
 			required: false
-		}
+		},
 	},
 	components: { taskList },
 	data() {
 		return {
+			snapshotTask: null,
 			project: {
 				name: '',
 				members: [],
@@ -67,9 +68,12 @@ export default {
 				if(doc.exists){
 					this.project = { id:doc.id, ...doc.data() };
 					const taskRef = this.db.collection(`projects/${this.id}/tasks`);
-					taskRef.get().then(querySnapshot => {
+					this.snapshotTask = taskRef.onSnapshot(querySnapshot => {
+						this.tasks = [];
 						querySnapshot.forEach(register => {
-							this.tasks.push({ id:register.id, projectId: this.project.id, ...register.data() });
+							let task = { id:register.id, projectId: this.project.id, ...register.data() };
+							task.members = this.$store.getters.getUsersById(task.members);
+							this.tasks.push(task);
 						});
 					});
 
@@ -80,6 +84,9 @@ export default {
 				console.log("Error getting documents: ", error);
 			});
 		}
+	},
+	beforeDestroy() {
+		if(this.snapshotTask) this.snapshotTask();
 	},
 }
 </script>

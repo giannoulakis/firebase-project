@@ -1,33 +1,47 @@
 <template>
 	<div id="popup">
-		<div id="form">
-			<form @submit.prevent="onSubmit">
-				<div class="field">
-					<label> Nome</label>
-					<input v-model="task.name">
-				</div>
-				<div class="field">
-					<label> Membros</label>
-					<select v-model="task.members" multiple>
-						<option v-for="(member, index) in members" :key="index" :value="member.id">
-							{{member.name}}
-						</option>
-					</select>
-				</div>
-				<div class="field">
-					<label> Descrição</label>
-					<textarea v-model="task.description"></textarea>
-				</div>
-				<div class="field">
-					<label> Prazo</label>
-					<input v-model="task.dateDue" type="date">
-				</div>
-				<div class="field">
-					<label> Finished</label>
-					<input type="checkbox" v-model="task.finished">
-				</div>
-				<input value="Salvar" type="submit" />
-			</form>
+		<div class="modal is-active">
+			<div class="modal-background"></div>
+			<div class="modal-card">
+				<form @submit.prevent="onSubmit">
+					<header class="modal-card-head">
+						<p class="modal-card-title">Modal title</p>
+						<span class="delete" aria-label="close" @click="goBack"></span>
+					</header>
+					<section class="modal-card-body">
+						<div id="form">
+								<div class="field">
+									<label> Nome</label>
+									<input v-model="task.name">
+								</div>
+								<div class="field">
+									<label> Membros</label>
+									<select v-model="task.members" multiple>
+										<option v-for="(member, index) in members" :key="index" :value="member.id">
+											{{member.name}}
+										</option>
+									</select>
+								</div>
+								<div class="field">
+									<label> Descrição</label>
+									<textarea v-model="task.description"></textarea>
+								</div>
+								<div class="field">
+									<label> Prazo</label>
+									<input v-model="task.dateDue" type="date">
+								</div>
+								<div class="field">
+									<label> Finished</label>
+									<input type="checkbox" v-model="task.finished">
+								</div>
+						</div>
+					</section>
+					<footer class="modal-card-foot">
+						<button class="button is-success" type="submit">Salvar</button>
+						<a href="#" @click.prevent="goBack" class="button">Cancelar</a>
+					</footer>
+				</form>
+			</div>
 		</div>
 	</div>
 </template>
@@ -75,7 +89,10 @@ export default {
       }).catch(function(error) {
         console.error("Error adding document: ", error);
       });
-    }
+		},
+		goBack() {
+			this.$router.push({name:'projectView', params: {id:this.id}});
+		}
   },
 	mounted() {
 		this.db = firebase.firestore();

@@ -57,7 +57,7 @@ export default new Vuex.Store({
     },
     setUsersCache({commit}, {users}) {
       commit('setUsersCache', users);
-    }
+    },
   },
   getters:{
     userId: state => {
@@ -65,6 +65,9 @@ export default new Vuex.Store({
         return null;
       }
       return state.user.uid
-    }
+    },
+    getUsersById: state => (ids) => {
+      return state.users.filter(user => ids.indexOf(user.id) >= 0);
+    },
   }
 })
