@@ -34,22 +34,23 @@
 									{{task.finished || false}}
 								</div>
                 <form @submit.prevent="onSubmit">
-                  <div class="field">
-                    <input class="input" v-model="comment.description">
-                    <button class="button is-success" type="submit">Comentar</button>
+                  <div class="field has-addons">
+                    <div class="control">
+                      <input class="input" type="text" v-model="comment.description">
+                    </div>
+                    <div class="control">
+                      <button type="submit" class="button is-success">Enviar</button>
+                    </div>
                   </div>
-				        </form>
+                </form>
                 <div class="comments" v-for="comment in commentList">
-                  <div class="comment">
-                    {{comment.dateCreated}}
-                    {{comment.description}}
-                  </div>
+                  <comment-edit :comment="comment" :projectId="id" :taskId="taskId" />
                 </div>
 						</div>
 					</section>
 					<footer class="modal-card-foot">
-						<button class="button is-success" type="submit">Salvar</button>
-						<a href="#" @click.prevent="goBack" class="button">Cancelar</a>
+						<!-- <button class="button is-success" type="submit">Salvar</button> -->
+						<a href="#" @click.prevent="goBack" class="button">Fechar</a>
 					</footer>
 			</div>
 		</div>
@@ -57,7 +58,11 @@
 </template>
 <script>
 import firebase from '@/firebase'
+import commentEdit from '../components/CommentEdit';
 export default {
+  components: {
+    commentEdit
+  },
 	props: {
 		id: {
 			type: String,
@@ -97,7 +102,16 @@ export default {
       const commentsRef = this.db.collection('projects').doc(this.id).collection('tasks').doc(this.taskId).collection('comments');
 
 			let q;
-      this.comment.dateCreated = new Date().getTime();
+      // this.comment.dateCreated = new Date().getTime();
+      let current_datetime = new Date()
+      this.comment.dateCreated = current_datetime.getFullYear() +
+        "-" + (('0'+(current_datetime.getMonth() + 1)).substr(-2)) +
+        "-" + (('0'+current_datetime.getDate()).substr(-2)) +
+        " " + (('0'+current_datetime.getHours()).substr(-2)) +
+        ":" + (('0'+current_datetime.getMinutes()).substr(-2)) +
+        ":" + (('0'+current_datetime.getSeconds()).substr(-2));
+
+
       this.comment.member = this.userId;
       q = commentsRef.add(this.comment);
 
