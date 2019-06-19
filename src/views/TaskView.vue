@@ -46,6 +46,25 @@
                 <div class="comments" v-for="comment in commentList">
                   <comment-edit :comment="comment" :projectId="id" :taskId="taskId" />
                 </div>
+
+
+                <div class="checklist" v-for="item in checklistOrdered">
+                	{{ item.description }}
+                  <!-- <checklist-edit :comment="checklistItem" :projectId="id" :taskId="taskId" /> -->
+                </div>
+
+                <form @submit.prevent="onSubmitChecklist">
+                	<div class="field has-addons">
+                		<div class="control">
+                			<input class="input" type="text" v-model="checklist.description">
+                		</div>
+                		<div class="control">
+                			<button type="submit" class="button is-success">Enviar</button>
+                		</div>
+                	</div>
+                </form>
+
+
 						</div>
 					</section>
 					<footer class="modal-card-foot">
@@ -80,13 +99,18 @@ export default {
 				members: [],
 				dateDue: '',
         comments: [],
+        checklist: [],
       },
       comment: {
+        description: '',
+      },
+      checklist: {
         description: '',
       },
 			members: [],
       db: null,
       snapshotComments: null,
+      snapshotChecklist: null,
 		}
   },
   computed: {
@@ -94,7 +118,12 @@ export default {
       return this.$store.getters.userId;
     },
     commentList() {
+    	//if(!this.task.comments) return [];
       return this.task.comments.sort((a,b)=>{ return a.dateCreated > b.dateCreated? 1: -1 })
+    },
+    checklistOrdered() {
+    	//if(!this.task.checklist) return [];
+      return this.task.checklist.sort((a,b)=>{ return a.order > b.order? 1: -1 })
     },
   },
   methods:{
@@ -123,6 +152,24 @@ export default {
         console.error("Error adding document: ", error);
       });
 		},
+
+
+ onSubmitChecklist(){
+      const checklistRef = this.db.collection('projects').doc(this.id).collection('tasks').doc(this.taskId).collection('checklist');
+
+			let q;
+			this.checklist.order = this.task.checklist.length;
+      q = checklistRef.add(this.checklist);
+
+			q.then(() => {
+        console.log("SAVE");
+        this.checklist = {description: ''};
+      }).catch(function(error) {
+        console.error("Error adding document: ", error);
+      });
+		},
+
+
 		goBack() {
 			this.$router.push({name:'projectView', params: {id:this.id}});
 		}
@@ -143,7 +190,8 @@ export default {
 		if(this.taskId) {
 			this.db.doc(`projects/${this.id}/tasks/${this.taskId}`).get().then(doc => {
 				if(doc.exists){
-          this.task = { id:doc.id, comments: [], ...doc.data() };
+          this.task = { id:doc.id, comments: [], checklist: [], ...doc.data() };
+
           const commentsRef = this.db.collection(`projects/${this.id}/tasks/${this.taskId}/comments`);
 					this.snapshotComments = commentsRef.onSnapshot(querySnapshot => {
 						this.task.comments = [];
@@ -155,6 +203,14 @@ export default {
 					});
 
 
+					const checklistRef = this.db.collection(`projects/${this.id}/tasks/${this.taskId}/checklist`);
+					this.snapshotChecklist = checklistRef.onSnapshot(querySnapshot => {
+						this.task.checklist = [];
+						querySnapshot.forEach(register => {
+							let checklistItem = { id:register.id, taskId: this.task.id, ...register.data() };
+							this.task.checklist.push(checklistItem);
+						});
+					});
 
 				} else {
 					console.log("Registro não encontrado");
@@ -166,6 +222,7 @@ export default {
 	},
 	beforeDestroy() {
 		if(this.snapshotComments) this.snapshotComments();
+		if(this.snapshotChecklist) this.snapshotChecklist();
 	},
 }
 </script>
