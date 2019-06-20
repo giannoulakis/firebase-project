@@ -1,19 +1,21 @@
 <template>
   <div id="app">
-    <div v-if="!isLoading">
-    <div id="nav">
-      <router-link :to="{name: 'home'}">Home</router-link> |
-      <router-link :to="{name: 'about'}">About</router-link> |
-      <router-link :to="{name: 'projects'}">Projects</router-link> |
-      <router-link :to="{name: 'signup'}">Sign Up</router-link> |
-      <a href="#" v-if="isAuthenticated" @click.prevent="logout">Logout</a>
+    <div class="container">
+      <div v-if="!isLoading">
+        <div id="nav">
+          <router-link :to="{name: 'home'}">Home</router-link> |
+          <router-link :to="{name: 'about'}">About</router-link> |
+          <router-link :to="{name: 'projects'}">Projects</router-link> |
+          <router-link :to="{name: 'signup'}">Sign Up</router-link> |
+          <a href="#" v-if="isAuthenticated" @click.prevent="logout">Logout</a>
+        </div>
+        <router-view/>
+      </div>
+      <div v-else>
+        Carregando...
+      </div>
+      <router-view name="popup" :key="$route.fullPath"/>
     </div>
-    <router-view/>
-    </div>
-    <div v-else>
-      Carregando...
-    </div>
-    <router-view name="popup" :key="$route.fullPath"/>
   </div>
 </template>
 
@@ -22,7 +24,7 @@
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  /*text-align: center;*/
   color: #2c3e50;
 }
 #nav {
