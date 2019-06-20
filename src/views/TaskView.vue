@@ -36,24 +36,9 @@
 
 
 
-						<div class="comments" v-for="comment in commentList">
-							<comment-edit :comment="comment" :projectId="id" :taskId="taskId" />
-						</div>
-						<form @submit.prevent="onSubmit">
-							<div class="field has-addons">
-								<div class="control">
-									<input class="input" type="text" v-model="comment.description">
-								</div>
-								<div class="control">
-									<button type="submit" class="button is-success">Enviar</button>
-								</div>
-							</div>
-						</form>
+						<task-comments :comments="task.comments" :projectId="id" :taskId="taskId" />
 
 						<task-checklist :checklist="task.checklist" :projectId="id" :taskId="taskId" />
-
-
-
 					</div>
 				</section>
 				<footer class="modal-card-foot">
@@ -66,11 +51,11 @@
 </template>
 <script>
 	import firebase from '@/firebase'
-	import commentEdit from '../components/CommentEdit';
+	import taskComments from '../components/TaskComments';
 	import taskChecklist from '../components/TaskChecklist';
 	export default {
 		components: {
-			commentEdit,
+			taskComments,
 			taskChecklist
 		},
 		props: {
@@ -102,45 +87,7 @@
 				snapshotChecklist: null,
 			}
 		},
-		computed: {
-			userId() {
-				return this.$store.getters.userId;
-			},
-			commentList() {
-
-				return this.task.comments.sort((a,b)=>{ return a.dateCreated > b.dateCreated? 1: -1 })
-			},
-
-		},
 		methods:{
-			onSubmit(){
-				const commentsRef = this.db.collection('projects').doc(this.id).collection('tasks').doc(this.taskId).collection('comments');
-
-				let q;
-				let current_datetime = new Date()
-				this.comment.dateCreated = current_datetime.getFullYear() +
-				"-" + (('0'+(current_datetime.getMonth() + 1)).substr(-2)) +
-				"-" + (('0'+current_datetime.getDate()).substr(-2)) +
-				" " + (('0'+current_datetime.getHours()).substr(-2)) +
-				":" + (('0'+current_datetime.getMinutes()).substr(-2)) +
-				":" + (('0'+current_datetime.getSeconds()).substr(-2));
-
-
-				this.comment.member = this.userId;
-				q = commentsRef.add(this.comment);
-
-				q.then(() => {
-					console.log("SAVE");
-					this.comment = {description: ''};
-					// this.$router.push({name:'projectView', params: {id: this.id}});
-				}).catch(function(error) {
-					console.error("Error adding document: ", error);
-				});
-			},
-
-
-
-
 			goBack() {
 				this.$router.push({name:'projectView', params: {id:this.id}});
 			}
@@ -165,18 +112,18 @@
 
 						const commentsRef = this.db.collection(`projects/${this.id}/tasks/${this.taskId}/comments`);
 						this.snapshotComments = commentsRef.onSnapshot(querySnapshot => {
-							this.task.comments = [];
+							let commentsHandler = [];
 							querySnapshot.forEach(register => {
 								let comment = { id:register.id, taskId: this.task.id, ...register.data() };
-							// task.members = this.$store.getters.getUsersById(task.members);
-							this.task.comments.push(comment);
-						});
+								commentsHandler.push(comment);
+							});
+							commentsHandler = commentsHandler.sort((a,b)=>{ return a.dateCreated > b.dateCreated? 1: -1 })
+							this.task.comments = commentsHandler;
 						});
 
 
 						const checklistRef = this.db.collection(`projects/${this.id}/tasks/${this.taskId}/checklist`);
 						this.snapshotChecklist = checklistRef.onSnapshot(querySnapshot => {
-
 							let checklistHandler = []
 							querySnapshot.forEach(register => {
 								let checklistItem = { id:register.id, taskId: this.task.id, ...register.data() };
