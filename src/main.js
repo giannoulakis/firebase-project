@@ -4,6 +4,8 @@ import App from './App.vue'
 // import VueAxios from 'vue-axios'
 import router from '@/router'
 import store from '@/store'
+import helpers from '@/helpers'
+window.helpers = helpers;
 
 Vue.config.productionTip = false
 

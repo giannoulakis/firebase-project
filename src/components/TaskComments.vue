@@ -52,13 +52,7 @@
 			onSubmit(){
 				const commentsRef = this.db.collection('projects').doc(this.projectId).collection('tasks').doc(this.taskId).collection('comments');
 
-				let current_datetime = new Date()
-				this.item.dateCreated = current_datetime.getFullYear() +
-				"-" + (('0'+(current_datetime.getMonth() + 1)).substr(-2)) +
-				"-" + (('0'+current_datetime.getDate()).substr(-2)) +
-				" " + (('0'+current_datetime.getHours()).substr(-2)) +
-				":" + (('0'+current_datetime.getMinutes()).substr(-2)) +
-				":" + (('0'+current_datetime.getSeconds()).substr(-2));
+				this.item.dateCreated = helpers.getCurrentDateTime();
 				this.item.member = this.userId;
 
 				commentsRef.add(this.item).then(() => {

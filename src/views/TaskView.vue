@@ -34,7 +34,7 @@
 							{{task.finished || false}}
 						</div>
 
-
+						<task-times :times="task.times" :projectId="id" :taskId="taskId" />
 
 						<task-comments :comments="task.comments" :projectId="id" :taskId="taskId" />
 
@@ -53,10 +53,12 @@
 	import firebase from '@/firebase'
 	import taskComments from '../components/TaskComments';
 	import taskChecklist from '../components/TaskChecklist';
+	import taskTimes from '../components/TaskTimes';
 	export default {
 		components: {
 			taskComments,
-			taskChecklist
+			taskChecklist,
+			taskTimes
 		},
 		props: {
 			id: {
@@ -76,6 +78,7 @@
 					dateDue: '',
 					comments: [],
 					checklist: [],
+					times: [],
 				},
 				comment: {
 					description: '',
@@ -85,6 +88,7 @@
 				db: null,
 				snapshotComments: null,
 				snapshotChecklist: null,
+				snapshotTimes: null,
 			}
 		},
 		methods:{
@@ -108,7 +112,19 @@
 			if(this.taskId) {
 				this.db.doc(`projects/${this.id}/tasks/${this.taskId}`).get().then(doc => {
 					if(doc.exists){
-						this.task = { id:doc.id, comments: [], checklist: [], ...doc.data() };
+						this.task = { id:doc.id, comments: [], checklist: [], times: [], ...doc.data() };
+
+						const timesRef = this.db.collection(`projects/${this.id}/tasks/${this.taskId}/times`);
+						this.snapshotTimes = timesRef.onSnapshot(querySnapshot => {
+							let timesHandler = [];
+							querySnapshot.forEach(register => {
+								let time = { id:register.id, taskId: this.task.id, ...register.data() };
+								timesHandler.push(time);
+							});
+							timesHandler = timesHandler.sort((a,b)=>{ return a.dateCreated > b.dateCreated? 1: -1 })
+							this.task.times = timesHandler;
+						});
+
 
 						const commentsRef = this.db.collection(`projects/${this.id}/tasks/${this.taskId}/comments`);
 						this.snapshotComments = commentsRef.onSnapshot(querySnapshot => {
@@ -146,6 +162,7 @@
 		beforeDestroy() {
 			if(this.snapshotComments) this.snapshotComments();
 			if(this.snapshotChecklist) this.snapshotChecklist();
+			if(this.snapshotTimes) this.snapshotTimes();
 		},
 	}
 </script>

@@ -15,6 +15,7 @@ export default new Vuex.Store({
     intendedUrl:'/',
     isLoading: true,
     users: [],
+    taskTimer: {},
   },
   mutations: {
     setUser(state, payload) {
@@ -31,6 +32,9 @@ export default new Vuex.Store({
     },
     setIsLoading(state, payload) {
       state.isLoading = payload;
+    },
+    setTaskTimer(state, payload) {
+      state.taskTimer = payload;
     }
   },
   actions: {
@@ -57,6 +61,16 @@ export default new Vuex.Store({
     },
     setUsersCache({commit}, {users}) {
       commit('setUsersCache', users);
+    },
+    setTaskTimer({commit}, {projectId, taskId, timerId, description, dateStart}) {
+      const taskTimer = {
+        projectId,
+        taskId,
+        timerId,
+        description,
+        dateStart
+      }
+      commit('setTaskTimer', taskTimer);
     },
   },
   getters:{
