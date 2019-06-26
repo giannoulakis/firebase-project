@@ -8,6 +8,7 @@
           <router-link :to="{name: 'projects'}">Projects</router-link> |
           <router-link :to="{name: 'signup'}">Sign Up</router-link> |
           <a href="#" v-if="isAuthenticated" @click.prevent="logout">Logout</a>
+          <running-timer />
         </div>
         <router-view/>
       </div>
@@ -40,7 +41,13 @@
 </style>
 <script>
 /* eslint-disable no-console */
+
+import runningTimer from '@/components/RunningTimer';
+
 export default {
+  components:{
+    runningTimer
+  },
   data() {
     return {}
   },

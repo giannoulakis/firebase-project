@@ -15,7 +15,7 @@ export default new Vuex.Store({
     intendedUrl:'/',
     isLoading: true,
     users: [],
-    taskTimer: {},
+    runningTimer: {},
   },
   mutations: {
     setUser(state, payload) {
@@ -33,8 +33,8 @@ export default new Vuex.Store({
     setIsLoading(state, payload) {
       state.isLoading = payload;
     },
-    setTaskTimer(state, payload) {
-      state.taskTimer = payload;
+    setRunningTimer(state, payload) {
+      state.runningTimer = payload;
     }
   },
   actions: {
@@ -52,6 +52,8 @@ export default new Vuex.Store({
       if(user){
         commit('setUser', user);
         commit('setIsAuthenticated', true);
+        this.dispatch('getUsers');
+        this.dispatch('getRunningTime');
         router.push({path:this.state.intendedUrl});
       } else {
         commit('setUser', null);
@@ -62,16 +64,56 @@ export default new Vuex.Store({
     setUsersCache({commit}, {users}) {
       commit('setUsersCache', users);
     },
-    setTaskTimer({commit}, {projectId, taskId, timerId, description, dateStart}) {
-      const taskTimer = {
-        projectId,
-        taskId,
-        timerId,
-        description,
-        dateStart
-      }
-      commit('setTaskTimer', taskTimer);
+    stopRunningTimer({commit} ) {
+      const db = firebase.firestore();
+      const timeRef = db.collection('projects').doc(this.state.runningTimer.projectId).collection('tasks').doc(this.state.runningTimer.taskId).collection('times').doc(this.state.runningTimer.timerId);
+
+      timeRef.update({dateEnd:helpers.getCurrentDateTime()}).then(() => {
+        console.log("SAVE");
+      }).catch(function(error) {
+        console.error("Error adding document: ", error);
+      });
+      commit('setRunningTimer', {});
     },
+    getUsers({commit}){
+      const db = firebase.firestore();
+      const usersRef = db.collection('users').onSnapshot(querySnapshot => {
+        let users = [];
+        querySnapshot.forEach(doc => {
+          users.push({ id:doc.id, ...doc.data() });
+        });
+        commit('setUsersCache', users);
+      });
+    },
+    getRunningTime({commit}) {
+      const db = firebase.firestore();
+      const timesRef = db.collectionGroup('times');
+      let query = timesRef.where('dateEnd','==','').where('member','==',this.getters.userId)
+      query.onSnapshot(querySnapshot => {
+        querySnapshot.forEach(register => {
+          var timer = register.data();
+          timer.id = register.id;
+
+          let taskRef = register.ref.parent.parent;
+          let projectRef = taskRef.parent.parent;
+
+          taskRef.get().then((register) => {
+            let task = register.data();
+
+            let data = {
+              projectId: projectRef.id,
+              taskId: taskRef.id,
+              timerId: timer.id,
+              name: task.name,
+              dateStart: timer.dateStart
+            }
+            commit('setRunningTimer',data);
+          });
+
+        });
+      });
+    }
+
   },
   getters:{
     userId: state => {

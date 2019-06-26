@@ -12,16 +12,6 @@ var config = {
 };
 const appFirebase = firebase.initializeApp(config);
 
-const db = firebase.firestore();
-const usersRef = db.collection('users').onSnapshot(querySnapshot => {
-    let users = [];
-    querySnapshot.forEach(doc => {
-      users.push({ id:doc.id, ...doc.data() });
-    });
-    store.dispatch('setUsersCache', {users:users});
-  });
-
-
 firebase.auth().onAuthStateChanged((user) => {
   store.dispatch('setLogin', {user:user});
 });

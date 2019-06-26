@@ -7,14 +7,14 @@
 			<div class="content">
 				<div class="field has-addons">
 					<div class="control">
-						<button @click="onStart" class="button is-success">Iniciar</button>
+						<button @click="onStart" v-if="!runningTimer.timerId" class="button is-success">Iniciar</button>
 					</div>
 				</div>
+				<hr />
 				<div v-for="item in times">
-					{{item}}
-					<!-- <t-item :item="item" :projectId="projectId" :taskId="taskId" /> -->
+					{{ item.dateStart }} - {{ item.dateEnd }}
+					<button v-if="item.id == runningTimer.timerId && item.member == userId" @click="onStop(item)">Parar</button>
 				</div>
-
 			</div>
 		</div>
 	</div>
@@ -43,6 +43,9 @@
 			userId() {
 				return this.$store.getters.userId;
 			},
+			runningTimer() {
+				return this.$store.state.runningTimer;
+			},
 		},
 		methods: {
 			onStart(){
@@ -57,24 +60,23 @@
 					}
 				}).catch(function(error){ });
 
-
 				let item = {};
 				item.member = this.userId;
 				item.dateStart = helpers.getCurrentDateTime();
+				item.dateEnd = '';
 
 				timesRef.add(item).then((docRef) => {
-					const aux = {
-						projectId: this.projectId,
-						taskId: this.taskId,
-						timerId: docRef.id,
-						description: taskDescription,
-						dateStart: item.dateStart }
-					this.$store.dispatch('setTaskTimer', aux)
 					console.log("SAVE");
 				}).catch(function(error) {
 					console.error("Error adding document: ", error);
 				});
+
 			},
+
+			onStop(){
+				this.$store.dispatch('stopRunningTimer');
+			},
+
 
 		},
 		mounted() {
