@@ -30,7 +30,7 @@
 							<span> {{task.dateDue}} </span>
 						</div>
 						<div class="field">
-							<label> Finished</label>
+							<label> Finalizado</label>
 							{{task.finished || false}}
 						</div>
 
@@ -93,7 +93,11 @@
 		},
 		methods:{
 			goBack() {
-				this.$router.push({name:'projectView', params: {id:this.id}});
+				//this.$router.push({name:'projectView', params: {id:this.id}});
+				// this.$router.back()
+				window.history.length > 1
+					? this.$router.go(-1)
+					: this.$router.push('/')
 			}
 		},
 		mounted() {
@@ -121,7 +125,7 @@
 								let time = { id:register.id, taskId: this.task.id, ...register.data() };
 								timesHandler.push(time);
 							});
-							timesHandler = timesHandler.sort((a,b)=>{ return a.dateCreated > b.dateCreated? 1: -1 })
+							timesHandler = timesHandler.sort((a,b)=>{ return a.dateStart > b.dateStart? 1: -1 })
 							this.task.times = timesHandler;
 						});
 

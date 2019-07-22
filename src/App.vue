@@ -6,6 +6,7 @@
           <router-link :to="{name: 'home'}">Home</router-link> |
           <router-link :to="{name: 'about'}">About</router-link> |
           <router-link :to="{name: 'projects'}">Projects</router-link> |
+          <router-link :to="{name: 'myTasks'}">My Tasks</router-link> |
           <router-link :to="{name: 'signup'}">Sign Up</router-link> |
           <a href="#" v-if="isAuthenticated" @click.prevent="logout">Logout</a>
           <running-timer />

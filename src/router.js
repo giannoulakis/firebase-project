@@ -11,6 +11,7 @@ import ProjectForm from './views/ProjectForm.vue'
 import ProjectView from './views/ProjectView.vue'
 import TaskForm from './views/TaskForm.vue'
 import TaskView from './views/TaskView.vue'
+import MyTasks from './views/MyTasks.vue'
 
 import store from './store'
 
@@ -83,7 +84,20 @@ const router = new Router({
         popup: TaskView,
       },
     },
-
+    {
+      path: '/mytasks',
+      name: 'myTasks',
+      component: MyTasks,
+    },
+    {
+      path: '/mytasks/view/:id/:taskId',
+      name: 'myTaskView',
+      props: {default:true, popup: true},
+      components: {
+        default: MyTasks,
+        popup: TaskView,
+      },
+    },
   ]
 })
 

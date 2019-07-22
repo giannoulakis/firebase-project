@@ -25,8 +25,6 @@
 			onStop(){
 				this.$store.dispatch('stopRunningTimer');
 			},
-
-
 		},
 	}
 

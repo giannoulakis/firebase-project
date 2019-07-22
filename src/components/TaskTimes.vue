@@ -12,8 +12,8 @@
 				</div>
 				<hr />
 				<div v-for="item in times">
-					{{ item.dateStart }} - {{ item.dateEnd }}
-					<button v-if="item.id == runningTimer.timerId && item.member == userId" @click="onStop(item)">Parar</button>
+					<time-item :item="item" :projectId="projectId" :taskId="taskId" />
+
 				</div>
 			</div>
 		</div>
@@ -25,11 +25,11 @@
 
 <script>
 	import firebase from '@/firebase';
-	// import commentItem from '../components/CommentItem';
+	import timeItem from '../components/TimeItem';
 	export default {
 		props: ['times', 'projectId', 'taskId'],
 		components:{
-			// commentItem
+			 timeItem
 		},
 		data() {
 			return {
@@ -73,9 +73,7 @@
 
 			},
 
-			onStop(){
-				this.$store.dispatch('stopRunningTimer');
-			},
+
 
 
 		},
