@@ -93,11 +93,11 @@
 		},
 		methods:{
 			goBack() {
-				//this.$router.push({name:'projectView', params: {id:this.id}});
-				// this.$router.back()
-				window.history.length > 1
-					? this.$router.go(-1)
-					: this.$router.push('/')
+				if(this.$route.name == 'myTaskView') {
+					this.$router.push({name:'myTasks'});
+					return;	
+				}
+				this.$router.push({name:'projectView', params: {id:this.id}});
 			}
 		},
 		mounted() {

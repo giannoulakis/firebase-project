@@ -21,8 +21,12 @@
 						</ul>
 					</div>
 					<div class="task-finished">
-						<strong>finished</strong>
+						<strong>Finalizado</strong>
 						{{task.finished || false}}
+					</div>
+					<div class="task-total-time">
+						<strong>Tempo total</strong>
+						{{task.totalTime }}
 					</div>
 				</div>
 				<!-- <div class="task-description">

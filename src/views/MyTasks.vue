@@ -20,8 +20,8 @@
       <td>{{ task.projectName }}</td>
       <td>{{ task.name }}</td>
 <!--       <td><span v-for="(member, indexMember) in task.members" :key="indexMember">{{ member.name }}, </span></td> -->
-      <td>{{ task.totalTime }}</td>
       <td>{{ task.dateDue }}</td>
+      <td>{{ task.totalTime }}</td>
       <td>{{ task.finished || false }}</td>
       <td><router-link :to="{name:'myTaskView', params: {id: task.projectId, taskId: task.id}}">Visualizar</router-link></td>
     </tr>
@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     getList(){
-      let tasks = [];
+      this.tasks = [];
       let arr = [];
       const db = firebase.firestore();
       const tasksRef = db.collectionGroup('tasks');
@@ -56,8 +56,8 @@ export default {
       query.onSnapshot(querySnapshot => {
         querySnapshot.forEach(register => {
           let task = register.data();
-          console.log(task);
           task.id = register.id;
+          task.totalTime = helpers.formatDuration(task.totalTime);          
 
 
           let projectRef = register.ref.parent.parent;
@@ -65,37 +65,18 @@ export default {
           let promiseProject = projectRef.get().then(register => {
             let project = register.data();
             task.projectName = project.name;
-            //task.projectId = register.id;
-            console.log('project Name set')
+            this.tasks.push(task);
           });
 
-          let totalTime = 0;
-          let promiseTime = register.ref.collection(`times`).get().then(querySnapshot => {
-            querySnapshot.forEach(doc => {
-              let time = doc.data();
-              if(time.dateEnd){
-                var duration = new Date(time.dateEnd).getTime() - new Date(time.dateStart).getTime();
-                totalTime += duration/1000;
-              }
-            });
-            task.totalTime = helpers.formatDuration(totalTime);
-          });
-
-          Promise.all([promiseProject,promiseTime]).then(() => {
-            tasks.push(task);
-          });
+          
+          // Promise.all([promiseProject,promiseTime]).then(() => {
+          // });
 
 
         });
 
         //tasks.sort((a,b)=>{ })
-        this.tasks = tasks;
-
-  //      Promise.all(arr).then(res=>{
-//
-  //      })
-
-
+        // this.tasks = tasks;
       });
 
     }

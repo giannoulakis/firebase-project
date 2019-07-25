@@ -72,7 +72,8 @@ export default {
 						this.tasks = [];
 						querySnapshot.forEach(register => {
 							let task = { id:register.id, projectId: this.project.id, ...register.data() };
-							task.members = this.$store.getters.getUsersById(task.members);
+							task.members = this.$store.getters.getUsersById(task.members);		
+							task.totalTime = helpers.formatDuration(task.totalTime);
 							this.tasks.push(task);
 						});
 					});
