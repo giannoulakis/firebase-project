@@ -39,6 +39,23 @@
 						<task-comments :comments="task.comments" :projectId="id" :taskId="taskId" />
 
 						<task-checklist :checklist="task.checklist" :projectId="id" :taskId="taskId" />
+
+
+						<h3>Anexos</h3>
+
+						<input type="file" @change="onFileUpload">
+
+						<h3>Lista de Anexos</h3>
+						<ul>
+							<li v-for="file in task.files">
+								{{ file.name }} <a :href="file.downloadUrl" target="_blank">visualizar</a>
+							</li>
+						</ul>
+
+
+
+
+
 					</div>
 				</section>
 				<footer class="modal-card-foot">
@@ -79,6 +96,7 @@
 					comments: [],
 					checklist: [],
 					times: [],
+					files: [],
 				},
 				comment: {
 					description: '',
@@ -95,10 +113,66 @@
 			goBack() {
 				if(this.$route.name == 'myTaskView') {
 					this.$router.push({name:'myTasks'});
-					return;	
+					return;
 				}
 				this.$router.push({name:'projectView', params: {id:this.id}});
-			}
+			},
+			onFileDownload(filePath){
+				var storage = firebase.storage();
+				var pathReference = storage.ref(filePath).getDownloadURL().then(function(url) {
+					console.log('pathReference',url);
+
+				})
+				let storageRef = storage.ref();
+				var pathReference2 = storageRef.child(filePath).getDownloadURL().then(function(url) {
+					console.log('pathReference2',url);
+				})
+
+			},
+			onFileUpload(e){
+				let files = e.target.files || e.dataTransfer.files;
+				if (!files.length) return;
+				let file = files[0];
+
+				let storageRef = firebase.storage().ref();
+				var timestamp = new Date().getTime();
+				let fileRef = storageRef.child(timestamp+'-'+file.name);
+				let uploadTask = fileRef.put(file);
+				// .then(function(snapshot) {
+				// 	console.log('Uploaded a blob or file!');
+				// 	console.log(snapshot);
+				// });
+
+				uploadTask.on('state_changed', snapshot => {
+				  // Observe state change events such as progress, pause, and resume
+				  // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+				  var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+				  console.log('Upload is ' + progress + '% done');
+				}, error => {
+					console.log('Erro',error);
+				  // Handle unsuccessful uploads
+				}, () => {
+				  // Handle successful uploads on complete
+				  // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+				  uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+				  	console.log('File available at', downloadURL);
+
+					  if(!this.task.files) this.task.files = [];
+					  this.task.files.push({name:file.name,downloadUrl:downloadURL});
+
+					  this.db.doc(`projects/${this.id}/tasks/${this.taskId}`).update({files:this.task.files}).then(()=>{
+					  	console.log('anexos salvos no db');
+					  });
+
+				  });
+
+
+
+
+
+				});
+
+		  }
 		},
 		mounted() {
 			this.db = firebase.firestore();
@@ -116,7 +190,7 @@
 			if(this.taskId) {
 				this.db.doc(`projects/${this.id}/tasks/${this.taskId}`).get().then(doc => {
 					if(doc.exists){
-						this.task = { id:doc.id, comments: [], checklist: [], times: [], ...doc.data() };
+						this.task = { id:doc.id, comments: [], checklist: [], times: [], files: [], ...doc.data() };
 
 						const timesRef = this.db.collection(`projects/${this.id}/tasks/${this.taskId}/times`);
 						this.snapshotTimes = timesRef.onSnapshot(querySnapshot => {

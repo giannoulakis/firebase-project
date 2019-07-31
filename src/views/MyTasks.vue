@@ -48,16 +48,16 @@ export default {
   },
   methods: {
     getList(){
-      this.tasks = [];
       let arr = [];
       const db = firebase.firestore();
       const tasksRef = db.collectionGroup('tasks');
       let query = tasksRef.where('members','array-contains',this.userId)
       query.onSnapshot(querySnapshot => {
+        this.tasks = [];
         querySnapshot.forEach(register => {
           let task = register.data();
           task.id = register.id;
-          task.totalTime = helpers.formatDuration(task.totalTime);          
+          task.totalTime = helpers.formatDuration(task.totalTime);
 
 
           let projectRef = register.ref.parent.parent;
@@ -68,7 +68,7 @@ export default {
             this.tasks.push(task);
           });
 
-          
+
           // Promise.all([promiseProject,promiseTime]).then(() => {
           // });
 

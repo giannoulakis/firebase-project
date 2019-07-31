@@ -68,7 +68,7 @@ export default new Vuex.Store({
       const db = firebase.firestore();
       const timeRef = db.collection('projects').doc(this.state.runningTimer.projectId).collection('tasks').doc(this.state.runningTimer.taskId).collection('times').doc(this.state.runningTimer.timerId);
 
-      timeRef.update({dateEnd:helpers.getCurrentDateTime()}).then(() => {
+      timeRef.update({dateEnd:new Date()}).then(() => {
         console.log("SAVE");
       }).catch(function(error) {
         console.error("Error adding document: ", error);

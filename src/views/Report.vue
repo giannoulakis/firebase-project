@@ -15,13 +15,24 @@
       </div>
     </form>
     <div class="charts">
-      {{data}}
-      </div>
+      {{dataTasks}}
+    </div>
+    <highcharts :options="lineChartOptions"></highcharts>
+    <highcharts :options="pizzaChartOptions"></highcharts>
   </div>
 </template>
 <script>
 import firebase from '@/firebase'
+
+import Highcharts from 'highcharts'
+//import HighchartsVue from 'highcharts-vue'
+import {Chart} from 'highcharts-vue'
+
+
 export default {
+  components: {
+    highcharts: Chart
+  },
   data() {
     return {
       data: [],
@@ -34,6 +45,68 @@ export default {
       // Tempo total
       // Membros
       //  Trabalho
+    }
+  },
+  computed:{
+    lineChartOptions(){
+      let taskNames = [];
+      let taskTotals = [];
+      for (let i in this.dataTasks){
+        taskNames.push(this.dataTasks[i].name);
+        taskTotals.push(this.dataTasks[i].totalTime);
+      };
+
+      return {
+        xAxis: {
+          categories: taskNames,
+        },
+       series: [{
+          data: taskTotals // sample data
+        }]
+      }
+    },
+    pizzaChartOptions(){
+      let seriesData = [];
+      for (let i in this.dataTasks){
+        seriesData.push({
+          name:this.dataTasks[i].name,
+          y:this.dataTasks[i].totalTime,
+        });
+      }
+
+      return {
+        chart: {
+          type: 'pie'
+        },
+        series: [{
+          name: 'Tarefas',
+         colorByPoint: true,
+         data:  seriesData
+       }]
+      }
+    },
+
+
+
+    dataTasks(){
+      let data = {};
+      this.data.forEach(time=>{
+        if(!data[time.taskId]) data[time.taskId] = {name:time.taskName,totalTime:0};
+        let duration = time.dateEnd.toMillis() - time.dateStart.toMillis();
+        let totalTime = duration/1000;
+        data[time.taskId].totalTime += totalTime;
+      });
+      return data;
+    },
+    dataProjects(){
+      let data = {};
+      this.data.forEach(time=>{
+        if(!data[time.projectId]) data[time.projectId] = {name:time.projectName,totalTime:0};
+        let duration = time.dateEnd.toMillis() - time.dateStart.toMillis();
+        let totalTime = duration/1000;
+        data[time.projectId].totalTime += totalTime;
+      });
+      return data;
     }
   },
   methods: {
@@ -54,11 +127,13 @@ export default {
           let promiseTask = tasktRef.get().then(register => {
             const aux = register.data();
             time.taskName = aux.name;
+            time.taskId = register.id;
           });
           let projectRef = tasktRef.parent.parent;
           let promiseProject = projectRef.get().then(register => {
             const aux = register.data();
             time.projectName = aux.name;
+            time.projectId = register.id;
           });
 
           Promise.all([promiseProject,promiseTask]).then(() => {
@@ -68,7 +143,8 @@ export default {
       });
      });
 
-    }
+    },
+
   },
   mounted() {
     this.db = firebase.firestore();
@@ -77,6 +153,7 @@ export default {
     auxDate.setMonth(auxDate.getMonth() - 1);
     this.dateStart = helpers.getDate(auxDate);
     this.getData();
+
   }
 }
 </script>

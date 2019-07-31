@@ -1,7 +1,7 @@
 <template>
 	<div class="time">
 		<template v-if="!isEditing">
-			{{ itemMutable.dateStart }} - {{ itemMutable.dateEnd }}
+			{{ dateStart }} - {{ dateEnd }}
 			<button v-if="item.id == runningTimer.timerId && item.member == userId" @click="onStop(item)">Parar</button>
 			<button v-if="item.member == userId" @click="startEdit(item)">Editar</button>
 
@@ -49,18 +49,29 @@ export default {
 		runningTimer() {
 			return this.$store.state.runningTimer;
 		},
+		dateStart(){
+			return helpers.getDateTime(this.item.dateStart.toDate());
+		},
+		dateEnd(){
+			if(!this.item.dateEnd) return null
+			return helpers.getDateTime(this.item.dateEnd.toDate());
+		}
 	},
 	methods: {
 		startEdit() {
 			this.isEditing = true;
+			this.itemMutable.dateStart = this.dateStart;
+			this.itemMutable.dateEnd = this.dateEnd;
 		},
 		endEdit() {
 			this.isEditing = false;
 		},
 		onSubmit() {
-			this.item.dateStart = new Date(this.itemMutable.dateStart);
-			this.item.dateEnd = new Date(this.itemMutable.dateEnd);
-			this.db.collection(`projects/${this.projectId}/tasks/${this.taskId}/times/`).doc(this.item.id).set(this.item);
+			let updateObj = {
+				dateStart:new Date(this.itemMutable.dateStart),
+				dateEnd:new Date(this.itemMutable.dateEnd),
+			}
+			this.db.collection(`projects/${this.projectId}/tasks/${this.taskId}/times/`).doc(this.item.id).update(updateObj);
 			this.endEdit();
 		},
 		onDelete() {
@@ -75,10 +86,6 @@ export default {
 	},
 	mounted() {
 		this.db = firebase.firestore();
-		// this.itemMutable = this.item;
-		this.itemMutable.dateStart = helpers.getDateTime(this.item.dateStart.toDate()); 
-		this.itemMutable.dateEnd = helpers.getDateTime(this.item.dateEnd.toDate()); 
-		
 	}
 }
 </script>

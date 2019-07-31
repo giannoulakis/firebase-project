@@ -62,7 +62,7 @@
 
 				let item = {};
 				item.member = this.userId;
-				item.dateStart = helpers.getCurrentDateTime();
+				item.dateStart = new Date();
 				item.dateEnd = '';
 
 				timesRef.add(item).then((docRef) => {
