@@ -1,14 +1,29 @@
 const helpers = {
 	getCurrentDateTime: () => {
 		let current_datetime = new Date()
-		return current_datetime.getFullYear() +
-		"-" + (('0'+(current_datetime.getMonth() + 1)).substr(-2)) +
-		"-" + (('0'+current_datetime.getDate()).substr(-2)) +
-		" " + (('0'+current_datetime.getHours()).substr(-2)) +
-		":" + (('0'+current_datetime.getMinutes()).substr(-2)) +
-		":" + (('0'+current_datetime.getSeconds()).substr(-2));
+		return helpers.getDateTime(current_datetime);
+	},
+	getDateTime: (dateTime) => {
+		return dateTime.getFullYear() +
+		"-" + (('0'+(dateTime.getMonth() + 1)).substr(-2)) +
+		"-" + (('0'+dateTime.getDate()).substr(-2)) +
+		" " + (('0'+dateTime.getHours()).substr(-2)) +
+		":" + (('0'+dateTime.getMinutes()).substr(-2)) +
+		":" + (('0'+dateTime.getSeconds()).substr(-2));
+	},
+	getCurrentDate: () => {
+		let current_datetime = new Date()
+		return helpers.getDate(current_datetime);
+	},
+	getDate: (dateTime) => {
+		return dateTime.getFullYear() +
+		"-" + (('0'+(dateTime.getMonth() + 1)).substr(-2)) +
+		"-" + (('0'+dateTime.getDate()).substr(-2));
 	},
 	formatDuration: (seconds) => {
+		if(!seconds) {
+			seconds = 0;
+		}
 		//console.log()
 		//var seconds = Math.floor(seconds % 60);
 		var minutes = Math.floor((seconds / 60) % 60);

@@ -5,7 +5,7 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Login from './views/Login.vue'
 import SignUp from './views/SignUp.vue'
-import About from './views/About.vue'
+import Report from './views/Report.vue'
 import ProjectList from './views/ProjectList.vue'
 import ProjectForm from './views/ProjectForm.vue'
 import ProjectView from './views/ProjectView.vue'
@@ -36,9 +36,9 @@ const router = new Router({
       component: SignUp
     },
     {
-      path: '/about',
-      name: 'about',
-      component: About
+      path: '/report',
+      name: 'report',
+      component: Report
     },
     {
       path: '/projects',

@@ -36,7 +36,7 @@ exports.updateTaskTime = functions.firestore.document('projects/{projectId}/task
     querySnapshot.forEach(doc => {
       let time = doc.data();
       if(time.dateEnd){
-        var duration = new Date(time.dateEnd).getTime() - new Date(time.dateStart).getTime();
+        var duration = time.dateEnd.toMillis() - time.dateStart.toMillis();
         totalTime += duration/1000;
       }
     });
@@ -44,6 +44,33 @@ exports.updateTaskTime = functions.firestore.document('projects/{projectId}/task
       totalTime : totalTime,
     };
     return admin.firestore().doc(`projects/${context.params.projectId}/tasks/${context.params.taskId}`).update(taskObject)
+  }).catch((error) => {
+    console.log(error);
+  });
+});
+
+
+exports.updateProjectInfo = functions.firestore.document('projects/{projectId}/tasks/{taskId}').onWrite((change, context) => {
+  let totalTime = 0;
+  let totalTasks = 0;
+  let finishedTasks = 0;
+  return admin.firestore().collection(`projects/${context.params.projectId}/tasks`).get().then(querySnapshot => {
+    querySnapshot.forEach(doc => {
+      let task = doc.data();
+      if(task.totalTime){
+        totalTime += task.totalTime;
+      }
+      if(task.finished) {
+        finishedTasks++;
+      }
+      totalTasks++;
+    });
+    var projectObject = {
+      totalTime,
+      totalTasks,
+      finishedTasks
+    };
+    return admin.firestore().doc(`projects/${context.params.projectId}`).update(projectObject)
   }).catch((error) => {
     console.log(error);
   });

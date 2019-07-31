@@ -4,7 +4,7 @@
       <div v-if="!isLoading">
         <div id="nav">
           <router-link :to="{name: 'home'}">Home</router-link> |
-          <router-link :to="{name: 'about'}">About</router-link> |
+          <router-link :to="{name: 'report'}">Reports</router-link> |
           <router-link :to="{name: 'projects'}">Projects</router-link> |
           <router-link :to="{name: 'myTasks'}">My Tasks</router-link> |
           <router-link :to="{name: 'signup'}">Sign Up</router-link> |

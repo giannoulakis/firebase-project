@@ -1,7 +1,7 @@
 <template>
 	<div class="time">
 		<template v-if="!isEditing">
-			{{ item.dateStart }} - {{ item.dateEnd }}
+			{{ itemMutable.dateStart }} - {{ itemMutable.dateEnd }}
 			<button v-if="item.id == runningTimer.timerId && item.member == userId" @click="onStop(item)">Parar</button>
 			<button v-if="item.member == userId" @click="startEdit(item)">Editar</button>
 
@@ -10,10 +10,10 @@
 			<form @submit.prevent="onSubmit">
 				<div class="field has-addons">
 					<div class="control">
-						<input class="input" type="text" v-model="item.dateStart">
+						<input class="input" type="text" v-model="itemMutable.dateStart">
 					</div>
 					<div class="control">
-						<input class="input" type="text" v-model="item.dateEnd">
+						<input class="input" type="text" v-model="itemMutable.dateEnd">
 					</div>
 					<div class="control">
 						<button type="submit" class="button is-success">
@@ -36,6 +36,10 @@ export default {
 		return {
 			isEditing: false,
 			db: null,
+			itemMutable: {
+				dateStart: '',
+				dateEnd: '',
+			}
 		}
 	},
 	computed: {
@@ -54,6 +58,8 @@ export default {
 			this.isEditing = false;
 		},
 		onSubmit() {
+			this.item.dateStart = new Date(this.itemMutable.dateStart);
+			this.item.dateEnd = new Date(this.itemMutable.dateEnd);
 			this.db.collection(`projects/${this.projectId}/tasks/${this.taskId}/times/`).doc(this.item.id).set(this.item);
 			this.endEdit();
 		},
@@ -69,6 +75,10 @@ export default {
 	},
 	mounted() {
 		this.db = firebase.firestore();
+		// this.itemMutable = this.item;
+		this.itemMutable.dateStart = helpers.getDateTime(this.item.dateStart.toDate()); 
+		this.itemMutable.dateEnd = helpers.getDateTime(this.item.dateEnd.toDate()); 
+		
 	}
 }
 </script>
